@@ -15,11 +15,14 @@ generate = [
 
     "GIRepository.Repository",
     "GIRepository.EnumInfo",
+    "GIRepository.InterfaceInfo",
     "GIRepository.RepositoryLoadFlags",
     # "GIRepository.Typelib", # Missing memory management functions
 ]
 
 manual = [
+    "GIRepository.Typelib",
+
     "GLib.Error",
     "GLib.Quark",
     "GLib.OptionGroup",
