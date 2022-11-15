@@ -1,0 +1,2 @@
+gir -o .
+cargo build

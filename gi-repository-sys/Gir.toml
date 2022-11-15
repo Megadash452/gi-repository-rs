@@ -1,0 +1,17 @@
+[options]
+library = "GIRepository"
+version = "2.0"
+min_cfg_version = "1.72.0"
+target_path = "."
+girs_directories = ["../gir-files/"]
+work_mode = "sys"
+
+external_libraries = [
+    "GLib",
+    "GObject"
+]
+
+ignore = [
+    "GIRepository.MICRO_VERSION",
+    "GIRepository.MINOR_VERSION",
+]
