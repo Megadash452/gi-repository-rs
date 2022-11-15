@@ -21,7 +21,17 @@
 use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut};
 
 
+#[doc(alias = "GITypelib")]
 pub struct Typelib(ffi::GITypelib);
+// TODO: why is the macro giving me these errors?
+// glib::wrapper! {
+//     #[doc(alias = "GIRepository")]
+//     pub struct Typelib(Boxed<ffi::GITypelib>);
+
+//     match fn {
+//         free => || ffi::g_typelib_free(),
+//     }
+// }
 
 impl From<ffi::GITypelib> for Typelib {
     fn from(ptr: ffi::GITypelib) -> Self {
@@ -43,13 +53,15 @@ impl FromGlibPtrNone<*mut ffi::GITypelib> for Typelib {
     }
 }
 impl FromGlibPtrFull<*mut ffi::GITypelib> for Typelib {
-    unsafe fn from_glib_full(ptr: ffi::GITypelib) -> Self {
+    unsafe fn from_glib_full(ptr: *mut ffi::GITypelib) -> Self {
         assert!(!ptr.is_null() && !(*ptr).is_null());
         Self(*ptr)
     }
 }
 impl<'a> ToGlibPtrMut<'a, *mut ffi::GITypelib> for Typelib {
-    fn to_glib_none_mut(&'a mut self) -> StashMut<ffi::GITypelib, Self> {
-        StashMut::from(&mut self.0)
+    type Storage = &'a mut Self;
+    
+    fn to_glib_none_mut(&'a mut self) -> StashMut<*mut ffi::GITypelib, Self> {
+        StashMut(&mut self.0, self)
     }
 }

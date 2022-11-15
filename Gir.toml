@@ -25,5 +25,5 @@ manual = [
 
     "GLib.Error",
     "GLib.Quark",
-    "GLib.OptionGroup",
+    # "GLib.OptionGroup",
 ]
