@@ -18,11 +18,12 @@
 //   };
 // typedef struct _GITypelib GITypelib;
 
-use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut};
+use std::cell::RefCell;
+use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut, from_glib_none};
 
 
 #[doc(alias = "GITypelib")]
-pub struct Typelib(ffi::GITypelib);
+pub struct Typelib(RefCell<ffi::GITypelib>);
 // TODO: why is the macro giving me these errors?
 // glib::wrapper! {
 //     #[doc(alias = "GIRepository")]
@@ -33,35 +34,56 @@ pub struct Typelib(ffi::GITypelib);
 //     }
 // }
 
-impl From<ffi::GITypelib> for Typelib {
-    fn from(ptr: ffi::GITypelib) -> Self {
-       Self(ptr)
+impl Typelib {
+    pub fn namespace(&self) -> Option<glib::GString> {
+        unsafe {
+            from_glib_none(ffi::g_typelib_get_namespace(self.0.as_ptr()))
+        }
     }
+    pub fn load_symbol(&self, symbol_name: &str) -> Option<usize> { // TODO: what type should the symbol pointer be?
+        unsafe {
+            let mut rtrn = std::ptr::null_mut();
+            // TODO: which numbers the function returns are true and which are false?
+            if ffi::g_typelib_symbol(
+                self.0.as_ptr(),
+                symbol_name.as_bytes().as_ptr() as *const i8,
+                &mut rtrn
+            ) == 0 {
+                None
+            } else {
+                Some(rtrn as usize)
+            }
+        }
+    }
+    // pub fn g_typelib_new_from_const_memory(memory: *const u8, len: size_t, error: *mut *mut glib::GError) -> *mut GITypelib;
+    // TODO: whats a mapped file?
+    // pub fn g_typelib_new_from_mapped_file(mfile: *mut glib::GMappedFile, error: *mut *mut glib::GError) -> *mut GITypelib;
+    // pub fn g_typelib_new_from_memory(memory: *mut u8, len: size_t, error: *mut *mut glib::GError) -> *mut GITypelib;
 }
 
 impl Drop for Typelib {
     fn drop(&mut self) {
         unsafe {
-            ffi::g_typelib_free(&mut self.0)
+            ffi::g_typelib_free(self.0.as_ptr())
         }
     }
 }
 impl FromGlibPtrNone<*mut ffi::GITypelib> for Typelib {
     unsafe fn from_glib_none(ptr: *mut ffi::GITypelib) -> Self {
         assert!(!ptr.is_null() && !(*ptr).is_null());
-        Self(*ptr)
+        Self(RefCell::new(*ptr))
     }
 }
 impl FromGlibPtrFull<*mut ffi::GITypelib> for Typelib {
     unsafe fn from_glib_full(ptr: *mut ffi::GITypelib) -> Self {
         assert!(!ptr.is_null() && !(*ptr).is_null());
-        Self(*ptr)
+        Self(RefCell::new(*ptr))
     }
 }
 impl<'a> ToGlibPtrMut<'a, *mut ffi::GITypelib> for Typelib {
     type Storage = &'a mut Self;
     
     fn to_glib_none_mut(&'a mut self) -> StashMut<*mut ffi::GITypelib, Self> {
-        StashMut(&mut self.0, self)
+        StashMut(self.0.as_ptr(), self)
     }
 }
