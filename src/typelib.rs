@@ -20,6 +20,7 @@
 
 use std::cell::RefCell;
 use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut, from_glib_none};
+use libc::c_void;
 
 
 #[doc(alias = "GITypelib")]
@@ -40,10 +41,9 @@ impl Typelib {
             from_glib_none(ffi::g_typelib_get_namespace(self.0.as_ptr()))
         }
     }
-    pub fn load_symbol(&self, symbol_name: &str) -> Option<usize> { // TODO: what type should the symbol pointer be?
+    pub fn load_symbol(&self, symbol_name: &str) -> Option<*mut c_void> { // TODO: what type should the symbol pointer be?
         unsafe {
             let mut rtrn = std::ptr::null_mut();
-            // TODO: which numbers the function returns are true and which are false?
             if ffi::g_typelib_symbol(
                 self.0.as_ptr(),
                 symbol_name.as_bytes().as_ptr() as *const i8,
@@ -51,12 +51,11 @@ impl Typelib {
             ) == 0 {
                 None
             } else {
-                Some(rtrn as usize)
+                Some(rtrn)
             }
         }
     }
     // pub fn g_typelib_new_from_const_memory(memory: *const u8, len: size_t, error: *mut *mut glib::GError) -> *mut GITypelib;
-    // TODO: whats a mapped file?
     // pub fn g_typelib_new_from_mapped_file(mfile: *mut glib::GMappedFile, error: *mut *mut glib::GError) -> *mut GITypelib;
     // pub fn g_typelib_new_from_memory(memory: *mut u8, len: size_t, error: *mut *mut glib::GError) -> *mut GITypelib;
 }
