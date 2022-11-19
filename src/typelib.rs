@@ -18,24 +18,39 @@
 //   };
 // typedef struct _GITypelib GITypelib;
 
-use std::cell::RefCell;
-use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut, from_glib_none};
+use std::ptr::{self, NonNull};
+use std::ffi::CString;
+use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut, from_glib_none, from_glib_full};
 use libc::c_void;
 
 
 #[doc(alias = "GITypelib")]
-pub struct Typelib(RefCell<ffi::GITypelib>);
-// TODO: why is the macro giving me these errors?
-// glib::wrapper! {
-//     #[doc(alias = "GIRepository")]
-//     pub struct Typelib(Boxed<ffi::GITypelib>);
-
-//     match fn {
-//         free => || ffi::g_typelib_free(),
-//     }
-// }
+pub struct Typelib(NonNull<ffi::GITypelib>);
 
 impl Typelib {
+    pub fn new_from_memory(memory: &[u8]) -> Result<Self, glib::Error> {
+        unsafe {
+            let mut error = ptr::null_mut();
+            let rtrn = ffi::g_typelib_new_from_const_memory(memory.as_ptr(), memory.len(), &mut error);
+            if error.is_null() {
+                Ok(from_glib_none(rtrn))
+            } else {
+                Err(from_glib_full(error))
+            }
+        }
+    }
+    pub fn new_from_mut_memory(memory: &mut [u8]) -> Result<Self, glib::Error> {
+        unsafe {
+            let mut error = ptr::null_mut();
+            let rtrn = ffi::g_typelib_new_from_memory(memory.as_mut_ptr(), memory.len(), &mut error);
+            if error.is_null() {
+                Ok(from_glib_none(rtrn))
+            } else {
+                Err(from_glib_full(error))
+            }
+        }
+    }
+
     pub fn namespace(&self) -> Option<glib::GString> {
         unsafe {
             from_glib_none(ffi::g_typelib_get_namespace(self.0.as_ptr()))
@@ -43,10 +58,11 @@ impl Typelib {
     }
     pub fn load_symbol(&self, symbol_name: &str) -> Option<*mut c_void> { // TODO: what type should the symbol pointer be?
         unsafe {
+            let symbol_name = CString::new(symbol_name).expect("This string contains non-ASCII characters.");
             let mut rtrn = std::ptr::null_mut();
             if ffi::g_typelib_symbol(
                 self.0.as_ptr(),
-                symbol_name.as_bytes().as_ptr() as *const i8,
+                symbol_name.as_ptr(),
                 &mut rtrn
             ) == 0 {
                 None
@@ -55,9 +71,8 @@ impl Typelib {
             }
         }
     }
-    // pub fn g_typelib_new_from_const_memory(memory: *const u8, len: size_t, error: *mut *mut glib::GError) -> *mut GITypelib;
+
     // pub fn g_typelib_new_from_mapped_file(mfile: *mut glib::GMappedFile, error: *mut *mut glib::GError) -> *mut GITypelib;
-    // pub fn g_typelib_new_from_memory(memory: *mut u8, len: size_t, error: *mut *mut glib::GError) -> *mut GITypelib;
 }
 
 impl Drop for Typelib {
@@ -69,14 +84,24 @@ impl Drop for Typelib {
 }
 impl FromGlibPtrNone<*mut ffi::GITypelib> for Typelib {
     unsafe fn from_glib_none(ptr: *mut ffi::GITypelib) -> Self {
-        assert!(!ptr.is_null() && !(*ptr).is_null());
-        Self(RefCell::new(*ptr))
+        Self(match NonNull::new(ptr) {
+            Some(ptr) => {
+                assert!(!ptr.as_ref().is_null());
+                ptr
+            },
+            None => panic!("dereferenced null")
+        })
     }
 }
 impl FromGlibPtrFull<*mut ffi::GITypelib> for Typelib {
     unsafe fn from_glib_full(ptr: *mut ffi::GITypelib) -> Self {
-        assert!(!ptr.is_null() && !(*ptr).is_null());
-        Self(RefCell::new(*ptr))
+        Self(match NonNull::new(ptr) {
+            Some(ptr) => {
+                assert!(!ptr.as_ref().is_null());
+                ptr
+            },
+            None => panic!("dereferenced null")
+        })
     }
 }
 impl<'a> ToGlibPtrMut<'a, *mut ffi::GITypelib> for Typelib {
