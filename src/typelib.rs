@@ -19,13 +19,14 @@
 // typedef struct _GITypelib GITypelib;
 
 use std::ptr::{self, NonNull};
-use std::ffi::CString;
-use glib::translate::{ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut, from_glib_none, from_glib_full};
+use glib::translate::{ToGlibPtr, ToGlibPtrMut, FromGlibPtrNone, FromGlibPtrFull, StashMut, from_glib_none, from_glib_full};
 use libc::c_void;
 
 
+/// TODO
 #[doc(alias = "GITypelib")]
-pub struct Typelib(NonNull<ffi::GITypelib>);
+#[derive(Debug)]
+pub struct Typelib(pub NonNull<ffi::GITypelib>);
 
 impl Typelib {
     pub fn new_from_memory(memory: &[u8]) -> Result<Self, glib::Error> {
@@ -50,29 +51,36 @@ impl Typelib {
             }
         }
     }
+    pub fn new_from_mapped_file(mfile: *mut glib_sys::GMappedFile) -> Result<Self, glib::Error> {
+        unsafe {
+            let mut error = ptr::null_mut();
+            let rtrn = ffi::g_typelib_new_from_mapped_file(mfile, &mut error);
+            if error.is_null() {
+                Ok(from_glib_none(rtrn))
+            } else {
+                Err(from_glib_full(error))
+            }
+        }
+    }
 
     pub fn namespace(&self) -> Option<glib::GString> {
         unsafe {
             from_glib_none(ffi::g_typelib_get_namespace(self.0.as_ptr()))
         }
     }
-    pub fn load_symbol(&self, symbol_name: &str) -> Option<*mut c_void> { // TODO: what type should the symbol pointer be?
-        unsafe {
-            let symbol_name = CString::new(symbol_name).expect("This string contains non-ASCII characters.");
-            let mut rtrn = std::ptr::null_mut();
-            if ffi::g_typelib_symbol(
-                self.0.as_ptr(),
-                symbol_name.as_ptr(),
-                &mut rtrn
-            ) == 0 {
-                None
-            } else {
-                Some(rtrn)
-            }
+    pub unsafe fn load_symbol(&self, symbol_name: &str) -> Option<*mut c_void> { // TODO: what type should the symbol pointer be?
+        let mut rtrn = std::ptr::null_mut();
+        if ffi::g_typelib_symbol(
+            self.0.as_ptr(),
+            symbol_name.to_glib_none().0,
+            &mut rtrn
+        ) == 0 {
+            None
+        } else {
+            Some(rtrn);
+            todo!("dlopen symbol")
         }
     }
-
-    // pub fn g_typelib_new_from_mapped_file(mfile: *mut glib::GMappedFile, error: *mut *mut glib::GError) -> *mut GITypelib;
 }
 
 impl Drop for Typelib {

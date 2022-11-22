@@ -10,18 +10,63 @@ deprecate_by_min_version = true
 single_version_file = true
 
 generate = [
-    "GIRepository.BaseInfo",
-    #     "GIRepository.ArgInfo",
-
-    "GIRepository.Repository",
+    # Base Info aliases
+    "GIRepository.ArgInfo",
+    "GIRepository.CallableInfo",
+    "GIRepository.CallbackInfo",
+    "GIRepository.ConstantInfo",
     "GIRepository.EnumInfo",
+    "GIRepository.FieldInfo",
+    "GIRepository.FunctionInfo",
     "GIRepository.InterfaceInfo",
+    "GIRepository.ObjectInfo",
+    "GIRepository.PropertyInfo",
+    "GIRepository.RegisteredTypeInfo",
+    "GIRepository.SignalInfo",
+    "GIRepository.StructInfo",
+    "GIRepository.TypeInfo",
+    "GIRepository.UnionInfo",
+    "GIRepository.VFuncInfo",
+    "GIRepository.ValueInfo",
+
+    # Enums
+    "GIRepository.ArrayType",
+    "GIRepository.Direction",
+    "GIRepository.InfoType",
+    "GIRepository.RepositoryError",
+    "GIRepository.ScopeType",
+    "GIRepository.Transfer",
+    "GIRepository.TypeTag",
+    # "GIRepository.InvokeError",
+
+    # Flags
+    "GIRepository.FieldInfoFlags",
+    "GIRepository.FunctionInfoFlags",
     "GIRepository.RepositoryLoadFlags",
+    "GIRepository.VFuncInfoFlags",
+
+    # Unions
+    "GIRepository.Argument",
+
+    # Callbacks
+    "GIRepository.ObjectInfoGetValueFunction",
+    "GIRepository.ObjectInfoRefFunction",
+    "GIRepository.ObjectInfoSetValueFunction",
+    "GIRepository.ObjectInfoUnrefFunction",
+
+    # Records
+    # "GIRepository.AttributeIter", # Missing memory management functions
     # "GIRepository.Typelib", # Missing memory management functions
+    # "GIRepository.BaseInfo",
+
+    # Classes
+    "GIRepository.Repository",
 ]
 
 manual = [
     "GIRepository.Typelib",
+    "GIRepository.AttributeIter",
+    "GIRepository.BaseInfo",
 
     "GLib.Error",
     "GLib.Quark",
