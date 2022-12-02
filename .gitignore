@@ -2,9 +2,9 @@
 /Cargo.lock
 
 gi-repository-sys/target
-gi-repository-sys/tests
-gi-repository-sys/src
-gi-repository-sys/build.rs
+# gi-repository-sys/tests
+# gi-repository-sys/src
+# gi-repository-sys/build.rs
 gi-repository-sys/Cargo.lock
 # gi-repository-sys/Cargo.toml
 
