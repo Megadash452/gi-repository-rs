@@ -1,5 +1,8 @@
 [package]
 name = "gi-repository"
+description = "High level bindings of libgirepository"
+license = "MIT"
+repository = "https://github.com/Megadash452/gi-repository-rs"
 version = "0.1.0"
 edition = "2021"
 
