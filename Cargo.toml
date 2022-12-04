@@ -14,12 +14,15 @@ bitflags = "1.0"
 
 [dependencies.ffi]
 package = "gi-repository-sys"
-path = "./gi-repository-sys/"
+version = "0.0.1"
+git = "https://github.com/Megadash452/gi-repository-rs"
 
 
 [dependencies.glib]
+version = "0.17.0"
 git = "https://github.com/gtk-rs/gtk-rs-core/"
 [dependencies.glib-sys]
+version = "0.17.0"
 git = "https://github.com/gtk-rs/gtk-rs-core/"
 
 [features]
