@@ -8,4 +8,4 @@ gi-repository-sys/target
 gi-repository-sys/Cargo.lock
 # gi-repository-sys/Cargo.toml
 
-src/auto
+# src/auto
