@@ -14,19 +14,21 @@ features = ["dox"]
 [dependencies]
 libc = "0.2"
 bitflags = "1.0"
+ffi = { package = "gi-repository-sys", version = "0.0.1" }
+glib = "0.16.4"
+glib-sys = "0.16.3"
 
-[dependencies.ffi]
-package = "gi-repository-sys"
-version = "0.0.1"
-git = "https://github.com/Megadash452/gi-repository-rs"
+# [dependencies.ffi]
+# package = "gi-repository-sys"
+# version = "0.0.1"
+# git = "https://github.com/Megadash452/gi-repository-rs"
 
-
-[dependencies.glib]
-version = "0.17.0"
-git = "https://github.com/gtk-rs/gtk-rs-core/"
-[dependencies.glib-sys]
-version = "0.17.0"
-git = "https://github.com/gtk-rs/gtk-rs-core/"
+# [dependencies.glib]
+# version = "0.17.0"
+# git = "https://github.com/gtk-rs/gtk-rs-core/"
+# [dependencies.glib-sys]
+# version = "0.17.0"
+# git = "https://github.com/gtk-rs/gtk-rs-core/"
 
 [features]
 dox = ["glib/dox", "ffi/dox"]
