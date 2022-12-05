@@ -6,6 +6,7 @@ build = "build.rs"
 repository = "https://github.com/Megadash452/gi-repository-rs"
 description = "FFI bindings to libgirepository-2.0"
 license = "MIT"
+
 [package.metadata.system-deps.gobject_introspection_1_0]
 name = "gobject-introspection-1.0"
 version = "1.72"
@@ -17,14 +18,16 @@ name = "gi_repository_sys"
 
 [dependencies]
 libc = "0.2"
+# glib = { version = "0.16.3", package = "glib-sys"}
+# gobject = { version = "0.16.3", package = "gobject-sys"}
 
 [dependencies.glib]
-package = "glib-sys"
+# package = "glib-sys"
 version = "0.17.0"
 git = "https://github.com/gtk-rs/gtk-rs-core"
 
 [dependencies.gobject]
-package = "gobject-sys"
+# package = "gobject-sys"
 version = "0.17.0"
 git = "https://github.com/gtk-rs/gtk-rs-core"
 
